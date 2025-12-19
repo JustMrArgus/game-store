@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Currency {
+  USD
+  EUR
+  UAH
+}
+
+model User {
+  id        Int    @id @default(autoincrement())
+  email     String @unique
+  nickname  String
+  password  String
+
+  balance   Int @default(0)
+  balanceCurrency Currency
+
+  cart Cart?
+}
+
+model Cart {
+  id     Int @id @default(autoincrement())
+  userId Int @unique
+
+  user  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+model Game {
+  id                Int      @id @default(autoincrement())
+  title             String
+  description       String
+  trailer           String
+  primaryImage      String
+  additionalImages  String[]
+  logo              String
+  price             Int
+  currency          Currency
+  developer         String
+  publisher         String
+  releaseDate       DateTime
+  platforms         String[]
+  minimumOS         String
+  minimumCPU        String
+  minimumMemory     String
+  minimumGPU        String
+  minimumStorage    String
+  recommendedOS     String
+  recommendedCPU    String
+  recommendedMemory String
+  recommendedGPU    String
+  recommendedStorage String
+
+  cartItems CartItem[]
+}
+
+model CartItem {
+  cartId Int
+  gameId Int
+
+  quantity Int      @default(1)
+  price    Int
+  currency Currency
+
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  game Game @relation(fields: [gameId], references: [id])
+
+  @@id([cartId, gameId])
+}
