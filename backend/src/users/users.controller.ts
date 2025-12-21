@@ -34,9 +34,9 @@ export class UsersController {
   @Patch(':userId')
   async updateUser(
     @Param('userId', ParseIntPipe) userId: number,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() modifedUserData: UpdateUserDto,
   ) {
-    return await this.usersService.updateUser(userId, updateUserDto);
+    return await this.usersService.updateUser(userId, modifedUserData);
   }
 
   @Delete(':userId')

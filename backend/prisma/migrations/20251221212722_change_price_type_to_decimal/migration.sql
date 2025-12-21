@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Game" ALTER COLUMN "price" SET DATA TYPE DECIMAL(65,30);

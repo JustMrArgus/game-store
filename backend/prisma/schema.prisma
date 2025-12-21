@@ -32,21 +32,21 @@ model Game {
   primaryImage      String
   additionalImages  String[]
   logo              String
-  price             Int
+  price             Decimal
   developer         String
   publisher         String
-  releaseDate       DateTime
+  releaseDate       String
   platforms         String[]
-  minimumOS         String
-  minimumCPU        String
-  minimumMemory     String
-  minimumGPU        String
-  minimumStorage    String
-  recommendedOS     String
-  recommendedCPU    String
-  recommendedMemory String
-  recommendedGPU    String
-  recommendedStorage String
+  minOS             String
+  minCPU            String
+  minMemory         String
+  minGPU            String
+  minStorage        String
+  recOS             String
+  recCPU            String
+  recMemory         String
+  recGPU            String
+  recStorage        String
 
   cartItems CartItem[]
 }
@@ -56,7 +56,7 @@ model CartItem {
   gameId Int
 
   quantity Int      @default(1)
-  price    Int
+  price    Decimal
 
   cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
   game Game @relation(fields: [gameId], references: [id])

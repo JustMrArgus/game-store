@@ -40,9 +40,14 @@ export class UsersService {
   }
 
   async getAllUsers() {
-    return await this.prisma.user.findMany({
-      select: { id: true, email: true, name: true },
-    });
+    try {
+      return await this.prisma.user.findMany({
+        select: { id: true, email: true, name: true },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   async getUser(userId: number) {
@@ -61,11 +66,11 @@ export class UsersService {
     }
   }
 
-  async updateUser(userId: number, updateUserDto: UpdateUserDto) {
+  async updateUser(userId: number, modifedUserData: UpdateUserDto) {
     try {
       const updatedUser = await this.prisma.user.update({
         where: { id: userId },
-        data: updateUserDto,
+        data: modifedUserData,
         select: {
           id: true,
           email: true,
