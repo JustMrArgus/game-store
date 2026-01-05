@@ -41,9 +41,10 @@ export class UsersService {
 
   async getAllUsers() {
     try {
-      return await this.prisma.user.findMany({
+      const users = await this.prisma.user.findMany({
         select: { id: true, email: true, name: true },
       });
+      return { status: 'success', data: users };
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Something went wrong');

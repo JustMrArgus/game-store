@@ -25,7 +25,8 @@ model Cart {
 
 model Game {
   id                Int      @id @default(autoincrement())
-  key               String
+  keys               String[]
+  quantity          Int
   title             String
   description       String
   trailer           String

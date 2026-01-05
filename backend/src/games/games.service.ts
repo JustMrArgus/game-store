@@ -25,7 +25,8 @@ export class GamesService {
 
   async getAllGames() {
     try {
-      return await this.prisma.game.findMany({ omit: { key: true } });
+      const games = await this.prisma.game.findMany({ omit: { keys: true } });
+      return { status: 'success', data: games };
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Something went wrong');
@@ -36,7 +37,7 @@ export class GamesService {
     try {
       const game = await this.prisma.game.findUniqueOrThrow({
         where: { id: gameId },
-        omit: { key: true },
+        omit: { keys: true },
       });
       return { status: 'success', data: game };
     } catch (error) {
