@@ -7,18 +7,21 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async createUser({ email, name, password }: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     try {
       const newUser = await this.prisma.user.create({
         data: {
           email,
           name,
-          password,
+          password: hashedPassword,
           cart: {
             create: {},
           },

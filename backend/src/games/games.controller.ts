@@ -7,15 +7,18 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('games')
 export class GamesController {
   constructor(private readonly gamesService: GamesService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   async createGame(@Body() newGame: CreateGameDto) {
     return await this.gamesService.createGame(newGame);
@@ -31,6 +34,7 @@ export class GamesController {
     return await this.gamesService.getGame(gameId);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':gameId')
   async updateGame(
     @Param('gameId', ParseIntPipe) gameId: number,
@@ -39,6 +43,7 @@ export class GamesController {
     return await this.gamesService.updateGame(gameId, modifiedGameData);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':gameId')
   async deleteGame(@Param('gameId', ParseIntPipe) gameId: number) {
     return await this.gamesService.deleteGame(gameId);

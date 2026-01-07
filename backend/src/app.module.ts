@@ -5,19 +5,20 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { GamesModule } from './games/games.module';
 import { CartsModule } from './carts/carts.module';
-import { CartItemsModule } from './cart-items/cart-items.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     UsersModule,
     GamesModule,
     CartsModule,
-    CartItemsModule,
     PrismaModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
