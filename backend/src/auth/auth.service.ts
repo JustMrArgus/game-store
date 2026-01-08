@@ -10,6 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './types/jwtPayload.type';
+import { ROLE } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -19,8 +20,8 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async generateTokens(userId: number, email: string) {
-    const jwtPayload: JwtPayload = { sub: userId, email: email };
+  async generateTokens(userId: number, email: string, role: ROLE) {
+    const jwtPayload: JwtPayload = { sub: userId, email, role };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {

@@ -12,6 +12,9 @@ import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import type { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { Roles } from './decorators/roles.decorator';
+import { RolesGuard } from './guards/roles.guard';
+import { ROLE } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -42,7 +45,8 @@ export class AuthController {
     return { status: 'success' };
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(ROLE.ADMIN, ROLE.USER)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Req() req: any, @Res({ passthrough: true }) res: Response) {
@@ -55,8 +59,8 @@ export class AuthController {
     return { status: 'success' };
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Post('tokens')
+  @Roles(ROLE.ADMIN, ROLE.USER)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @HttpCode(HttpStatus.OK)
   async refreshTokens(
     @Req() req: any,

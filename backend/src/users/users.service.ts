@@ -13,7 +13,7 @@ import * as bcrypt from 'bcryptjs';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser({ email, name, password }: CreateUserDto) {
+  async createUser({ email, name, password, role }: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
@@ -22,6 +22,7 @@ export class UsersService {
           email,
           name,
           password: hashedPassword,
+          role,
           cart: {
             create: {},
           },
@@ -45,7 +46,7 @@ export class UsersService {
   async getAllUsers() {
     try {
       const users = await this.prisma.user.findMany({
-        select: { id: true, email: true, name: true },
+        select: { id: true, email: true, name: true, role: true },
       });
       return { status: 'success', data: users };
     } catch (error) {
@@ -58,7 +59,7 @@ export class UsersService {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: { id: userId },
-        select: { id: true, email: true, name: true },
+        select: { id: true, email: true, name: true, role: true },
       });
       return { status: 'success', data: user };
     } catch (error) {
@@ -79,6 +80,7 @@ export class UsersService {
           id: true,
           email: true,
           name: true,
+          role: true,
         },
       });
       return { status: 'success', data: updatedUser };

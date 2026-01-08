@@ -1,6 +1,7 @@
+import { ROLE } from '@prisma/client';
+
 export type JwtPayload = {
   email: string;
   sub: number;
+  role: ROLE;
 };
-
-export type JwtPayloadWithRt = JwtPayload & { refreshToken: string };

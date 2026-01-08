@@ -13,12 +13,16 @@ import { GamesService } from './games.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ROLE } from '@prisma/client';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('games')
 export class GamesController {
   constructor(private readonly gamesService: GamesService) {}
 
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post()
   async createGame(@Body() newGame: CreateGameDto) {
     return await this.gamesService.createGame(newGame);
@@ -34,7 +38,8 @@ export class GamesController {
     return await this.gamesService.getGame(gameId);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch(':gameId')
   async updateGame(
     @Param('gameId', ParseIntPipe) gameId: number,
@@ -43,7 +48,8 @@ export class GamesController {
     return await this.gamesService.updateGame(gameId, modifiedGameData);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @Roles(ROLE.ADMIN)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Delete(':gameId')
   async deleteGame(@Param('gameId', ParseIntPipe) gameId: number) {
     return await this.gamesService.deleteGame(gameId);
