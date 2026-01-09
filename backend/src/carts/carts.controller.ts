@@ -20,35 +20,35 @@ export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Get()
   async getAllCarts() {
     return await this.cartsService.getAllCarts();
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Get(':cartId')
   async getCart(@Param('cartId', ParseIntPipe) cartId: number) {
     return await this.cartsService.getCart(cartId);
   }
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Delete(':cartId')
   async deleteCart(@Param('cartId', ParseIntPipe) cartId: number) {
     return await this.cartsService.deleteCart(cartId);
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Post('items')
   async createCartItem(@Body() newCartItem: CreateCartItemDto) {
     return await this.cartsService.createCartItem(newCartItem);
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Get(':cartId/items/:gameId')
   async getCartItem(
     @Param('cartId', ParseIntPipe) cartId: number,
@@ -58,7 +58,7 @@ export class CartsController {
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Delete(':cartId/items/:gameId')
   async deleteCartItem(
     @Param('cartId', ParseIntPipe) cartId: number,

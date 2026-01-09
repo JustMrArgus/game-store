@@ -120,11 +120,11 @@ export class AuthService {
       throw new ForbiddenException('Access Denied');
     }
 
-    const isRefreshTokenMathes = await bcrypt.compare(
+    const isRefreshTokenMatches = await bcrypt.compare(
       userRefreshToken,
       user.hashedRefreshToken,
     );
-    if (!isRefreshTokenMathes) {
+    if (!isRefreshTokenMatches) {
       throw new ForbiddenException('Access Denied');
     }
 

@@ -22,7 +22,7 @@ export class GamesController {
   constructor(private readonly gamesService: GamesService) {}
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Post()
   async createGame(@Body() newGame: CreateGameDto) {
     return await this.gamesService.createGame(newGame);
@@ -39,7 +39,7 @@ export class GamesController {
   }
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Patch(':gameId')
   async updateGame(
     @Param('gameId', ParseIntPipe) gameId: number,
@@ -49,7 +49,7 @@ export class GamesController {
   }
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Delete(':gameId')
   async deleteGame(@Param('gameId', ParseIntPipe) gameId: number) {
     return await this.gamesService.deleteGame(gameId);

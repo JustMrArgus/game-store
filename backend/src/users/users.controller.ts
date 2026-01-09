@@ -24,28 +24,28 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Post()
   async createUser(@Body() newUser: CreateUserDto) {
     return await this.usersService.createUser(newUser);
   }
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Get()
   async getAllUsers() {
     return await this.usersService.getAllUsers();
   }
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Get(':userId')
   async getUser(@Param('userId', ParseIntPipe) userId: number) {
     return await this.usersService.getUser(userId);
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Get('me')
   async getMe(@Req() req: any) {
     const userId = req.user.sub;
@@ -54,7 +54,7 @@ export class UsersController {
   }
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Patch(':userId')
   async updateUser(
     @Param('userId', ParseIntPipe) userId: number,
@@ -64,7 +64,7 @@ export class UsersController {
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Patch('me')
   async updateMe(@Req() req: any) {
     const userId = req.user.Subset;
@@ -73,7 +73,7 @@ export class UsersController {
   }
 
   @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Delete(':userId')
   async deleteUser(@Param('userId', ParseIntPipe) userId: number) {
     return await this.usersService.deleteUser(userId);

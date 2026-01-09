@@ -16,7 +16,7 @@ model User {
   email     String @unique
   name      String
   password  String
-  role      ROLE
+  role      ROLE   @default(USER)
   hashedRefreshToken String?
 
   cart Cart?

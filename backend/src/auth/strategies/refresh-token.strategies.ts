@@ -5,11 +5,11 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { Request } from 'express';
 
 @Injectable()
-export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-rt') {
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => request?.cookies?.refresh_token,
+        (request: Request) => request?.cookies?.refreshToken,
       ]),
       secretOrKey: configService.getOrThrow<string>('REFRESH_TOKEN_SECRET'),
     });

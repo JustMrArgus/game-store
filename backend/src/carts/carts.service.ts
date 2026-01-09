@@ -43,7 +43,7 @@ export class CartsService {
       return { status: 'success', data: cart };
     } catch (error) {
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Cart with id ${cartId} does not exists`);
+        throw new NotFoundException(`Cart with id ${cartId} does not exist`);
       }
       console.error(error);
       throw new InternalServerErrorException('Something went wrong');
@@ -58,7 +58,7 @@ export class CartsService {
       return { status: 'success' };
     } catch (error) {
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Cart with id ${cartId} does not exists`);
+        throw new NotFoundException(`Cart with id ${cartId} does not exist`);
       }
       console.error(error);
       throw new InternalServerErrorException('Something went wrong');
@@ -79,7 +79,7 @@ export class CartsService {
       return { status: 'success', data: cartItem };
     } catch (error) {
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Cart with id ${cartId} does not exists`);
+        throw new NotFoundException(`Cart with id ${cartId} does not exist`);
       }
       console.error(error);
       throw new InternalServerErrorException('Something went wrong');
@@ -144,7 +144,7 @@ export class CartsService {
     } catch (error) {
       if (error.code === 'P2025') {
         throw new NotFoundException(
-          `Cart item with cartId ${cartId} and gameId ${gameId} does not exists`,
+          `Cart item with cartId ${cartId} and gameId ${gameId} does not exist`,
         );
       }
       console.error(error);

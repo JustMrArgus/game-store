@@ -46,7 +46,7 @@ export class AuthController {
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Req() req: any, @Res({ passthrough: true }) res: Response) {
@@ -60,7 +60,7 @@ export class AuthController {
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt-rt'), RolesGuard)
   @HttpCode(HttpStatus.OK)
   async refreshTokens(
     @Req() req: any,
