@@ -1,9 +1,4 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -50,44 +45,37 @@ export class AuthService {
 
   async register(dto: RegisterUserDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    try {
-      const newUser = await this.prisma.user.create({
-        data: {
-          email: dto.email,
-          name: dto.name,
-          password: hashedPassword,
-          cart: {
-            create: {},
-          },
+    const newUser = await this.prisma.user.create({
+      data: {
+        email: dto.email,
+        name: dto.name,
+        password: hashedPassword,
+        cart: {
+          create: {},
         },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-        },
-      });
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
 
-      const { accessToken, refreshToken } = await this.generateTokens(
-        newUser.id,
-        newUser.email,
-      );
-      await this.updateRefreshTokenHash(newUser.id, refreshToken);
+    const { accessToken, refreshToken } = await this.generateTokens(
+      newUser.id,
+      newUser.email,
+      ROLE.USER,
+    );
+    await this.updateRefreshTokenHash(newUser.id, refreshToken);
 
-      return {
-        status: 'success',
-        id: newUser.id,
-        email: newUser.email,
-        name: newUser.name,
-        accessToken,
-        refreshToken,
-      };
-    } catch (error) {
-      if (error.code === 'P2002') {
-        throw new ConflictException('User with this email is already exists');
-      }
-      console.error(error);
-      throw new InternalServerErrorException('Something went wrong');
-    }
+    return {
+      status: 'success',
+      id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      accessToken,
+      refreshToken,
+    };
   }
 
   async login(email: string, password: string): Promise<any> {
@@ -131,6 +119,7 @@ export class AuthService {
     const { accessToken, refreshToken } = await this.generateTokens(
       user.id,
       user.email,
+      user.role,
     );
     await this.updateRefreshTokenHash(user.id, refreshToken);
 
