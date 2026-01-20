@@ -3,6 +3,7 @@ import {
   IsDecimal,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -28,10 +29,12 @@ export class CreateGameDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   primaryImage: string;
 
   @IsArray()
   @IsString({ each: true })
+  @IsOptional()
   additionalImages: string[];
 
   @IsString()
