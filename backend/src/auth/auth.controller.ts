@@ -37,8 +37,12 @@ export class AuthController {
   @Post('login')
   async login(@Req() req: any, @Res({ passthrough: true }) res: Response) {
     const user = req.user;
-    const tokens = await this.authService.generateTokens(user.id, user.email);
-    await this.authService.updateRefreshTokenHash(user.id, tokens.refreshToken);
+    const tokens = await this.authService.generateTokens(
+      user.id,
+      user.email,
+      user.role,
+    );
+    await this.authService.addRefreshTokenHash(user.id, tokens.refreshToken);
 
     this.setCookies(res, tokens.accessToken, tokens.refreshToken);
 
@@ -51,7 +55,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout(@Req() req: any, @Res({ passthrough: true }) res: Response) {
     const userId = req.user.sub;
-    await this.authService.logout(userId);
+    const currentRefreshToken = req.cookies?.refreshToken;
+    await this.authService.logout(userId, currentRefreshToken);
 
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
@@ -61,13 +66,14 @@ export class AuthController {
 
   @Roles(ROLE.ADMIN, ROLE.USER)
   @UseGuards(AuthGuard('jwt-rt'), RolesGuard)
+  @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refreshTokens(
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
   ) {
     const userId = req.user.sub;
-    const userRefreshToken = req.cookies.refreshToken;
+    const userRefreshToken = req.cookies?.refreshToken;
 
     const tokens = await this.authService.refreshTokens(
       userId,

@@ -35,11 +35,29 @@ export class AuthService {
     };
   }
 
-  async updateRefreshTokenHash(userId: number, refreshToken: string) {
+  async addRefreshTokenHash(userId: number, refreshToken: string) {
     const hash = await bcrypt.hash(refreshToken, 10);
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { hashedRefreshTokens: true },
+    });
+
+    const currentTokens = user?.hashedRefreshTokens || [];
+
+    const maxTokens =
+      this.configService.getOrThrow<number>('MAX_REFRESH_TOKENS');
+    const updatedTokens = [...currentTokens, hash].slice(-maxTokens);
+
     await this.prisma.user.update({
       where: { id: userId },
-      data: { hashedRefreshToken: hash },
+      data: { hashedRefreshTokens: updatedTokens },
+    });
+  }
+
+  async clearAllRefreshTokens(userId: number) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { hashedRefreshTokens: [] },
     });
   }
 
@@ -66,7 +84,7 @@ export class AuthService {
       newUser.email,
       ROLE.USER,
     );
-    await this.updateRefreshTokenHash(newUser.id, refreshToken);
+    await this.addRefreshTokenHash(newUser.id, refreshToken);
 
     return {
       status: 'success',
@@ -88,14 +106,33 @@ export class AuthService {
     return null;
   }
 
-  async logout(userId: number) {
-    await this.prisma.user.update({
-      where: {
-        id: userId,
-        hashedRefreshToken: { not: null },
-      },
-      data: { hashedRefreshToken: null },
+  async logout(userId: number, currentRefreshToken?: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { hashedRefreshTokens: true },
     });
+
+    if (!user || user.hashedRefreshTokens.length === 0) {
+      return { status: 'success' };
+    }
+
+    if (currentRefreshToken) {
+      const remainingTokens: string[] = [];
+      for (const hash of user.hashedRefreshTokens) {
+        const matches = await bcrypt.compare(currentRefreshToken, hash);
+        if (!matches) {
+          remainingTokens.push(hash);
+        }
+      }
+
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { hashedRefreshTokens: remainingTokens },
+      });
+    } else {
+      await this.clearAllRefreshTokens(userId);
+    }
+
     return { status: 'success' };
   }
 
@@ -104,16 +141,30 @@ export class AuthService {
       where: { id: userId },
     });
 
-    if (!user || !user.hashedRefreshToken) {
+    if (!user || user.hashedRefreshTokens.length === 0) {
       throw new ForbiddenException('Access Denied');
     }
 
-    const isRefreshTokenMatches = await bcrypt.compare(
-      userRefreshToken,
-      user.hashedRefreshToken,
-    );
-    if (!isRefreshTokenMatches) {
-      throw new ForbiddenException('Access Denied');
+    let tokenFound = false;
+    let matchedTokenIndex = -1;
+
+    for (let i = 0; i < user.hashedRefreshTokens.length; i++) {
+      const isMatch = await bcrypt.compare(
+        userRefreshToken,
+        user.hashedRefreshTokens[i],
+      );
+      if (isMatch) {
+        tokenFound = true;
+        matchedTokenIndex = i;
+        break;
+      }
+    }
+
+    if (!tokenFound) {
+      await this.clearAllRefreshTokens(userId);
+      throw new ForbiddenException(
+        'Access Denied - All sessions have been terminated',
+      );
     }
 
     const { accessToken, refreshToken } = await this.generateTokens(
@@ -121,7 +172,15 @@ export class AuthService {
       user.email,
       user.role,
     );
-    await this.updateRefreshTokenHash(user.id, refreshToken);
+
+    const updatedTokens = [...user.hashedRefreshTokens];
+    const newHash = await bcrypt.hash(refreshToken, 10);
+    updatedTokens[matchedTokenIndex] = newHash;
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { hashedRefreshTokens: updatedTokens },
+    });
 
     return {
       status: 'success',
