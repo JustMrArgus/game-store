@@ -6,15 +6,18 @@ import {
   IsNotEmpty,
   IsDecimal,
 } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 
 export class UpdateGameDto {
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   keys?: string[];
 
   @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   quantity?: number;
 
   @IsString()
@@ -69,6 +72,7 @@ export class UpdateGameDto {
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   platforms?: string[];
 
   @IsString()

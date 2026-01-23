@@ -6,13 +6,16 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateGameDto {
   @IsArray()
   @IsString({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   keys: string[];
 
   @IsNumber()
+  @Type(() => Number)
   quantity: number;
 
   @IsString()
@@ -39,6 +42,7 @@ export class CreateGameDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   logo: string;
 
   @IsDecimal()
@@ -58,6 +62,7 @@ export class CreateGameDto {
 
   @IsArray()
   @IsString({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   platforms: string[];
 
   @IsString()
