@@ -1,4 +1,3 @@
-import { Subset } from './../../node_modules/.prisma/client/index.d';
 import {
   Controller,
   Get,
@@ -66,10 +65,10 @@ export class UsersController {
   @Roles(ROLE.ADMIN, ROLE.USER)
   @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Patch('me')
-  async updateMe(@Req() req: any) {
-    const userId = req.user.Subset;
+  async updateMe(@Req() req: any, @Body() modifedUserData: UpdateUserDto) {
+    const userId = req.user.sub;
 
-    return await this.usersService.updateUser(+userId);
+    return await this.usersService.updateUser(+userId, modifedUserData);
   }
 
   @Roles(ROLE.ADMIN)
