@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsNotEmpty,
   IsDecimal,
+  IsInt,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
@@ -24,6 +25,16 @@ export class UpdateGameDto {
   @IsOptional()
   @IsNotEmpty()
   title?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  genre?: string;
+
+  @IsInt()
+  @IsOptional()
+  @IsNotEmpty()
+  buyCount?: number;
 
   @IsString()
   @IsOptional()

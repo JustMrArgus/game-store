@@ -138,6 +138,7 @@ export class PaymentsService {
             keys: true,
             quantity: true,
             primaryImage: true,
+            buyCount: true,
           },
         },
       },
@@ -160,7 +161,12 @@ export class PaymentsService {
         where: { id: item.game.id },
         data: {
           keys: remainingKeys,
-          quantity: item.game.quantity - item.quantity,
+          quantity: {
+            decrement: item.quantity,
+          },
+          buyCount: {
+            increment: item.quantity,
+          },
         },
       });
     }

@@ -32,9 +32,11 @@ model Cart {
 
 model Game {
   id                Int      @id @default(autoincrement())
-  keys               String[]
+  keys              String[]
   quantity          Int
   title             String
+  genre             String
+  buyCount          Int     @default(0)
   description       String
   trailer           String
   primaryImage      String
@@ -67,7 +69,7 @@ model CartItem {
   price    Decimal
 
   cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  game Game @relation(fields: [gameId], references: [id])
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@id([cartId, gameId])
 }

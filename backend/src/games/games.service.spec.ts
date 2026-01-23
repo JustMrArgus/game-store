@@ -20,6 +20,8 @@ describe('GamesService', () => {
     keys: ['KEY-001', 'KEY-002'],
     quantity: 2,
     title: 'Test Game',
+    genre: 'Test genre',
+    buyCount: 0,
     description: 'A test game description',
     trailer: 'https://example.com/trailer',
     primaryImage: 'https://example.com/image.jpg',

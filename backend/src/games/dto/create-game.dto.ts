@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsDecimal,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -21,6 +22,14 @@ export class CreateGameDto {
   @IsString()
   @IsNotEmpty()
   title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  genre: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  buyCount: number;
 
   @IsString()
   @IsNotEmpty()
