@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -19,6 +20,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ROLE } from '@prisma/client';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { GetGamesQueryDto } from './dto/get-games.query.dto';
 
 @Controller('games')
 export class GamesController {
@@ -62,8 +64,8 @@ export class GamesController {
   }
 
   @Get()
-  async getAllGames() {
-    return await this.gamesService.getAllGames();
+  async getAllGames(@Query() query: GetGamesQueryDto) {
+    return this.gamesService.getAllGames(query);
   }
 
   @Get(':gameId')

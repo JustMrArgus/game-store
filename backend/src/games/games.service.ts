@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
+import { GetGamesQueryDto } from './dto/get-games.query.dto';
+import { Prisma } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/client';
 
 @Injectable()
 export class GamesService {
@@ -14,9 +17,56 @@ export class GamesService {
     return newGame;
   }
 
-  async getAllGames() {
-    const games = await this.prisma.game.findMany({ omit: { keys: true } });
-    return games;
+  async getAllGames(query: GetGamesQueryDto) {
+    const { page, limit, genre, search, platforms, minPrice, maxPrice } = query;
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.GameWhereInput = {};
+
+    if (genre) {
+      where.genre = genre;
+    }
+
+    if (search) {
+      where.title = {
+        contains: search,
+        mode: 'insensitive',
+      };
+    }
+
+    if (platforms?.length) {
+      where.platforms = {
+        hasSome: platforms,
+      };
+    }
+
+    if (minPrice || maxPrice) {
+      where.price = {};
+
+      if (minPrice) {
+        where.price.gte = new Decimal(minPrice);
+      }
+
+      if (maxPrice) {
+        where.price.lte = new Decimal(maxPrice);
+      }
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.game.findMany({ where, skip, take: limit }),
+      this.prisma.game.count({ where }),
+    ]);
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async getGame(gameId: number) {

@@ -1,12 +1,13 @@
 import { useGames } from "@/lib/hooks/use-games";
+import { ClipLoader } from "react-spinners";
 
 const GamesList = () => {
   const { data, isLoading, isError } = useGames();
 
   if (isLoading) {
     return (
-      <div>
-        <h1>Loading...</h1>
+      <div className="flex w-full h-screen justify-center items-center">
+        <ClipLoader color="#FFFFFF" size={80} />
       </div>
     );
   }

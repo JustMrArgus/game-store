@@ -65,3 +65,23 @@ export interface VerifySessionResponse {
     payment_status: string;
   };
 }
+
+export interface GetGamesParams {
+  page?: number;
+  limit?: number;
+  genre?: string;
+  platforms?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
+}
+
+export interface GetGamesResponse {
+  items: Game[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}

@@ -1,10 +1,29 @@
-import type { Game } from "@/lib/types/responses";
+import type {
+  Game,
+  GetGamesParams,
+  GetGamesResponse,
+} from "@/lib/types/responses";
 import { handleResponse } from "./utils/api-utils";
 import { API_URL } from "./constants/constants";
 
-export const getAllGames = async (): Promise<Game[]> => {
-  const response = await fetch(`${API_URL}/games`);
-  return handleResponse<Game[]>(response);
+export const getAllGames = async (
+  params?: GetGamesParams,
+): Promise<GetGamesResponse> => {
+  const query = new URLSearchParams();
+
+  if (params?.page) query.append("page", params.page.toString());
+  if (params?.limit) query.append("limit", params.limit.toString());
+  if (params?.genre) query.append("genre", params.genre);
+  if (params?.platforms?.length)
+    query.append("platforms", params.platforms.join(","));
+  if (params?.minPrice !== undefined)
+    query.append("minPrice", params.minPrice.toString());
+  if (params?.maxPrice !== undefined)
+    query.append("maxPrice", params.maxPrice.toString());
+  if (params?.search) query.append("search", params.search);
+
+  const response = await fetch(`${API_URL}/games?${query.toString()}`);
+  return handleResponse<GetGamesResponse>(response);
 };
 
 export const getGame = async (gameId: number): Promise<Game> => {
