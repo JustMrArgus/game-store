@@ -8,7 +8,10 @@ import {
   patchMe,
   deleteUser,
 } from "@/lib/api/api";
-import type { UpdateUserRequest, CreateUserRequest } from "@/lib/types/requests";
+import type {
+  UpdateUserRequest,
+  CreateUserRequest,
+} from "@/lib/types/requests";
 
 export const userKeys = {
   all: ["users"] as const,
@@ -53,8 +56,13 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, data }: { userId: number; data: UpdateUserRequest }) =>
-      patchUser(userId, data),
+    mutationFn: ({
+      userId,
+      data,
+    }: {
+      userId: number;
+      data: UpdateUserRequest;
+    }) => patchUser(userId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
       queryClient.invalidateQueries({
