@@ -47,10 +47,10 @@ describe('AuthController', () => {
         refreshToken: 'refresh-token',
       });
 
-      const result = await controller.register(registerDto, mockResponse);
+      await controller.register(registerDto, mockResponse);
 
-      expect(result).toEqual({ status: 'success' });
       expect(mockAuthService.register).toHaveBeenCalledWith(registerDto);
+      expect(mockResponse.cookie).toHaveBeenCalled();
     });
   });
 
@@ -75,11 +75,11 @@ describe('AuthController', () => {
       });
       mockAuthService.addRefreshTokenHash.mockResolvedValue(undefined);
 
-      const result = await controller.login(mockRequest, mockResponse);
+      await controller.login(mockRequest, mockResponse);
 
-      expect(result).toEqual({ status: 'success' });
       expect(mockAuthService.generateTokens).toHaveBeenCalled();
       expect(mockAuthService.addRefreshTokenHash).toHaveBeenCalled();
+      expect(mockResponse.cookie).toHaveBeenCalled();
     });
   });
 
@@ -95,11 +95,10 @@ describe('AuthController', () => {
         clearCookie: jest.fn(),
       } as any;
 
-      mockAuthService.logout.mockResolvedValue({ status: 'success' });
+      mockAuthService.logout.mockResolvedValue(undefined);
 
-      const result = await controller.logout(mockRequest, mockResponse);
+      await controller.logout(mockRequest, mockResponse);
 
-      expect(result).toEqual({ status: 'success' });
       expect(mockAuthService.logout).toHaveBeenCalledWith(1, 'refresh-token');
       expect(mockResponse.clearCookie).toHaveBeenCalledWith('accessToken');
       expect(mockResponse.clearCookie).toHaveBeenCalledWith('refreshToken');

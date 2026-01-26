@@ -2,6 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GamesService } from './games.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateGameDto } from './dto/create-game.dto';
+import { validate } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
+import { UpdateGameDto } from './dto/update-game.dto';
 
 describe('GamesService', () => {
   let service: GamesService;
@@ -13,6 +16,7 @@ describe('GamesService', () => {
       findUniqueOrThrow: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      count: jest.fn(),
     },
   };
 
@@ -74,8 +78,7 @@ describe('GamesService', () => {
 
       const result = await service.createGame(createGameDto);
 
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual(mockCreatedGame);
+      expect(result).toEqual(mockCreatedGame);
       expect(mockPrismaService.game.create).toHaveBeenCalledWith({
         data: createGameDto,
       });
@@ -91,14 +94,13 @@ describe('GamesService', () => {
 
       const result = await service.createGame(createGameDto);
 
-      expect(result.status).toBe('success');
-      expect(result.data.title).toBe('Test Game');
-      expect(result.data.price).toBe('59.99');
+      expect(result.title).toBe('Test Game');
+      expect(result.price).toBe('59.99');
     });
   });
 
   describe('getAllGames', () => {
-    it('should return all games without keys', async () => {
+    it('should return all games with pagination', async () => {
       const mockGames = [
         {
           id: 1,
@@ -115,24 +117,53 @@ describe('GamesService', () => {
       ];
 
       mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(2);
 
-      const result = await service.getAllGames();
+      const query = { page: 1, limit: 10 };
+      const result = await service.getAllGames(query);
 
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual(mockGames);
-      expect(result.data.length).toBe(2);
-      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith({
-        omit: { keys: true },
-      });
+      expect(result.items).toEqual(mockGames);
+      expect(result.items.length).toBe(2);
+      expect(result.meta.total).toBe(2);
+      expect(result.meta.page).toBe(1);
+      expect(result.meta.limit).toBe(10);
     });
 
     it('should return empty array when no games exist', async () => {
       mockPrismaService.game.findMany.mockResolvedValue([]);
+      mockPrismaService.game.count.mockResolvedValue(0);
 
-      const result = await service.getAllGames();
+      const query = { page: 1, limit: 10 };
+      const result = await service.getAllGames(query);
 
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual([]);
+      expect(result.items).toEqual([]);
+      expect(result.meta.total).toBe(0);
+    });
+
+    it('should filter games by genre', async () => {
+      const mockGames = [{ id: 1, title: 'Action Game', genre: 'Action' }];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(1);
+
+      const query = { page: 1, limit: 10, genre: 'Action' };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalled();
+    });
+
+    it('should search games by title', async () => {
+      const mockGames = [{ id: 1, title: 'Test Game' }];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(1);
+
+      const query = { page: 1, limit: 10, search: 'Test' };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalled();
     });
   });
 
@@ -150,8 +181,7 @@ describe('GamesService', () => {
 
       const result = await service.getGame(1);
 
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual(mockGame);
+      expect(result).toEqual(mockGame);
       expect(mockPrismaService.game.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { id: 1 },
         omit: { keys: true },
@@ -181,8 +211,7 @@ describe('GamesService', () => {
 
       const result = await service.updateGame(1, updateData);
 
-      expect(result.status).toBe('success');
-      expect(result.data.title).toBe('Updated Game Title');
+      expect(result.title).toBe('Updated Game Title');
       expect(mockPrismaService.game.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: updateData,
@@ -202,8 +231,7 @@ describe('GamesService', () => {
 
       const result = await service.updateGame(1, updateData);
 
-      expect(result.status).toBe('success');
-      expect(result.data.price).toBe('39.99');
+      expect(result.price).toBe('39.99');
     });
 
     it('should update game keys', async () => {
@@ -219,8 +247,7 @@ describe('GamesService', () => {
 
       const result = await service.updateGame(1, updateData);
 
-      expect(result.status).toBe('success');
-      expect(result.data.keys).toEqual(['NEW-KEY-001', 'NEW-KEY-002']);
+      expect(result.keys).toEqual(['NEW-KEY-001', 'NEW-KEY-002']);
     });
 
     it('should throw when updating non-existent game', async () => {
@@ -238,9 +265,8 @@ describe('GamesService', () => {
     it('should delete a game successfully', async () => {
       mockPrismaService.game.delete.mockResolvedValue({});
 
-      const result = await service.deleteGame(1);
+      await service.deleteGame(1);
 
-      expect(result.status).toBe('success');
       expect(mockPrismaService.game.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });
@@ -252,6 +278,158 @@ describe('GamesService', () => {
       );
 
       await expect(service.deleteGame(999)).rejects.toThrow();
+    });
+  });
+
+  describe('CreateGameDto Validation', () => {
+    it('should fail when required field title is missing', async () => {
+      const dto = plainToInstance(CreateGameDto, {
+        genre: 'Action',
+        description: 'Test description',
+        trailer: 'https://example.com/trailer',
+        price: '59.99',
+        developer: 'Test Developer',
+        publisher: 'Test Publisher',
+        releaseDate: '2025-01-01',
+        platforms: ['PC'],
+        keys: ['KEY-001'],
+        quantity: 1,
+        buyCount: 0,
+        minOS: 'Windows 10',
+        minCPU: 'Intel i5',
+        minMemory: '8GB',
+        minGPU: 'GTX 1060',
+        minStorage: '50GB',
+        recOS: 'Windows 11',
+        recCPU: 'Intel i7',
+        recMemory: '16GB',
+        recGPU: 'RTX 3060',
+        recStorage: '100GB',
+      });
+
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+    });
+
+    it('should fail when genre is empty', async () => {
+      const dto = plainToInstance(CreateGameDto, {
+        title: 'Test Game',
+        genre: '',
+        description: 'Test description',
+        trailer: 'https://example.com/trailer',
+        price: '59.99',
+        developer: 'Test Developer',
+        publisher: 'Test Publisher',
+        releaseDate: '2025-01-01',
+        platforms: ['PC'],
+        keys: ['KEY-001'],
+        quantity: 1,
+        buyCount: 0,
+        minOS: 'Windows 10',
+        minCPU: 'Intel i5',
+        minMemory: '8GB',
+        minGPU: 'GTX 1060',
+        minStorage: '50GB',
+        recOS: 'Windows 11',
+        recCPU: 'Intel i7',
+        recMemory: '16GB',
+        recGPU: 'RTX 3060',
+        recStorage: '100GB',
+      });
+
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors.some((e) => e.property === 'genre')).toBe(true);
+    });
+
+    it('should fail when platforms is not an array of strings', async () => {
+      const dto = plainToInstance(CreateGameDto, {
+        title: 'Test Game',
+        genre: 'Action',
+        description: 'Test description',
+        trailer: 'https://example.com/trailer',
+        price: '59.99',
+        developer: 'Test Developer',
+        publisher: 'Test Publisher',
+        releaseDate: '2025-01-01',
+        platforms: [123, 456],
+        keys: ['KEY-001'],
+        quantity: 1,
+        buyCount: 0,
+        minOS: 'Windows 10',
+        minCPU: 'Intel i5',
+        minMemory: '8GB',
+        minGPU: 'GTX 1060',
+        minStorage: '50GB',
+        recOS: 'Windows 11',
+        recCPU: 'Intel i7',
+        recMemory: '16GB',
+        recGPU: 'RTX 3060',
+        recStorage: '100GB',
+      });
+
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors.some((e) => e.property === 'platforms')).toBe(true);
+    });
+
+    it('should fail when buyCount is not an integer', async () => {
+      const dto = plainToInstance(CreateGameDto, {
+        title: 'Test Game',
+        genre: 'Action',
+        description: 'Test description',
+        trailer: 'https://example.com/trailer',
+        price: '59.99',
+        developer: 'Test Developer',
+        publisher: 'Test Publisher',
+        releaseDate: '2025-01-01',
+        platforms: ['PC'],
+        keys: ['KEY-001'],
+        quantity: 1,
+        buyCount: 'not-an-int',
+        minOS: 'Windows 10',
+        minCPU: 'Intel i5',
+        minMemory: '8GB',
+        minGPU: 'GTX 1060',
+        minStorage: '50GB',
+        recOS: 'Windows 11',
+        recCPU: 'Intel i7',
+        recMemory: '16GB',
+        recGPU: 'RTX 3060',
+        recStorage: '100GB',
+      });
+
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors.some((e) => e.property === 'buyCount')).toBe(true);
+    });
+  });
+
+  describe('UpdateGameDto Validation', () => {
+    it('should pass with partial update data', async () => {
+      const dto = plainToInstance(UpdateGameDto, {
+        title: 'Updated Title',
+      });
+
+      const errors = await validate(dto);
+      expect(errors.length).toBe(0);
+    });
+
+    it('should pass with empty update (all fields optional)', async () => {
+      const dto = plainToInstance(UpdateGameDto, {});
+
+      const errors = await validate(dto);
+      expect(errors.length).toBe(0);
+    });
+
+    it('should fail when price is invalid in update', async () => {
+      const dto = plainToInstance(UpdateGameDto, {
+        price: 'invalid-price',
+      });
+
+      const errors = await validate(dto);
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors.some((e) => e.property === 'price')).toBe(true);
     });
   });
 });

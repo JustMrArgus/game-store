@@ -104,7 +104,6 @@ describe('AuthService', () => {
 
       const result = await service.register(registerDto);
 
-      expect(result.status).toBe('success');
       expect(result.email).toBe(registerDto.email);
       expect(result.name).toBe(registerDto.name);
       expect(result.accessToken).toBe('access-token');
@@ -165,20 +164,17 @@ describe('AuthService', () => {
       });
       mockPrismaService.user.update.mockResolvedValue({});
 
-      const result = await service.logout(1, 'refresh-token');
+      await service.logout(1, 'refresh-token');
 
-      expect(result.status).toBe('success');
       expect(mockPrismaService.user.update).toHaveBeenCalled();
     });
 
-    it('should return success when user has no tokens', async () => {
+    it('should return without error when user has no tokens', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
         hashedRefreshTokens: [],
       });
 
-      const result = await service.logout(1);
-
-      expect(result.status).toBe('success');
+      await expect(service.logout(1)).resolves.toBeUndefined();
     });
 
     it('should clear all tokens when no currentRefreshToken provided', async () => {
@@ -187,9 +183,8 @@ describe('AuthService', () => {
       });
       mockPrismaService.user.update.mockResolvedValue({});
 
-      const result = await service.logout(1);
+      await service.logout(1);
 
-      expect(result.status).toBe('success');
       expect(mockPrismaService.user.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: { hashedRefreshTokens: [] },
@@ -234,7 +229,6 @@ describe('AuthService', () => {
 
       const result = await service.refreshTokens(1, 'valid-refresh-token');
 
-      expect(result.status).toBe('success');
       expect(result.accessToken).toBe('new-access-token');
       expect(result.refreshToken).toBe('new-refresh-token');
     });

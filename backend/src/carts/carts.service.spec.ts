@@ -68,9 +68,8 @@ describe('CartsService', () => {
 
       const result = await service.getAllCarts();
 
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual(mockCarts);
-      expect(result.data.length).toBe(2);
+      expect(result).toEqual(mockCarts);
+      expect(result.length).toBe(2);
       expect(mockPrismaService.cart.findMany).toHaveBeenCalledWith({
         include: {
           items: {
@@ -87,8 +86,7 @@ describe('CartsService', () => {
 
       const result = await service.getAllCarts();
 
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual([]);
+      expect(result).toEqual([]);
     });
   });
 
@@ -113,8 +111,7 @@ describe('CartsService', () => {
 
       const result = await service.getCart(1);
 
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual(mockCart);
+      expect(result).toEqual(mockCart);
       expect(mockPrismaService.cart.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { id: 1 },
         include: {
@@ -140,9 +137,8 @@ describe('CartsService', () => {
     it('should delete a cart successfully', async () => {
       mockPrismaService.cart.delete.mockResolvedValue({});
 
-      const result = await service.deleteCart(1);
+      await service.deleteCart(1);
 
-      expect(result.status).toBe('success');
       expect(mockPrismaService.cart.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });
@@ -173,8 +169,7 @@ describe('CartsService', () => {
 
       const result = await service.getCartItem(1, 1);
 
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual(mockCartItem);
+      expect(result).toEqual(mockCartItem);
       expect(mockPrismaService.cartItem.findUniqueOrThrow).toHaveBeenCalledWith(
         {
           where: {
@@ -223,9 +218,8 @@ describe('CartsService', () => {
 
       const result = await service.createCartItem(createCartItemDto);
 
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual(mockCreatedCartItem);
-      expect(result.data.quantity).toBe(1);
+      expect(result).toEqual(mockCreatedCartItem);
+      expect(result.quantity).toBe(1);
       expect(mockPrismaService.cartItem.create).toHaveBeenCalled();
     });
 
@@ -263,8 +257,7 @@ describe('CartsService', () => {
 
       const result = await service.createCartItem(createCartItemDto);
 
-      expect(result.status).toBe('success');
-      expect(result.data.quantity).toBe(3);
+      expect(result.quantity).toBe(3);
       expect(mockPrismaService.cartItem.update).toHaveBeenCalledWith({
         data: { quantity: 3 },
         where: {
@@ -294,9 +287,8 @@ describe('CartsService', () => {
     it('should delete a cart item successfully', async () => {
       mockPrismaService.cartItem.delete.mockResolvedValue({});
 
-      const result = await service.deleteCartItem(1, 1);
+      await service.deleteCartItem(1, 1);
 
-      expect(result.status).toBe('success');
       expect(mockPrismaService.cartItem.delete).toHaveBeenCalledWith({
         where: {
           cartId_gameId: {
