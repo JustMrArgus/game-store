@@ -5,11 +5,21 @@ import cookieParser from 'cookie-parser';
 import { PrismaExceptionFilter } from './prisma/filters/prisma-exception.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import helmet from 'helmet';
+import hpp from 'hpp';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const { httpAdapter } = app.get(HttpAdapterHost);
+
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: false,
+    }),
+  );
+
+  app.use(hpp());
 
   app.use(cookieParser());
 
