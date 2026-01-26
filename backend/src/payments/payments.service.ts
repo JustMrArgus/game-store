@@ -81,7 +81,6 @@ export class PaymentsService {
     });
 
     return {
-      status: 'success',
       sessionId: session.id,
       url: session.url,
     };
@@ -188,7 +187,6 @@ export class PaymentsService {
     try {
       const session = await this.stripe.checkout.sessions.retrieve(sessionId);
       return {
-        status: 'success',
         paymentStatus: session.payment_status,
         customerEmail: session.customer_email,
       };

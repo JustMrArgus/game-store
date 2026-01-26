@@ -11,12 +11,12 @@ export class GamesService {
     const newGame = await this.prisma.game.create({
       data: newGameData,
     });
-    return { status: 'success', data: newGame };
+    return newGame;
   }
 
   async getAllGames() {
     const games = await this.prisma.game.findMany({ omit: { keys: true } });
-    return { status: 'success', data: games };
+    return games;
   }
 
   async getGame(gameId: number) {
@@ -24,7 +24,7 @@ export class GamesService {
       where: { id: gameId },
       omit: { keys: true },
     });
-    return { status: 'success', data: game };
+    return game;
   }
 
   async updateGame(gameId: number, modifiedGameData: UpdateGameDto) {
@@ -32,13 +32,12 @@ export class GamesService {
       where: { id: gameId },
       data: modifiedGameData,
     });
-    return { status: 'success', data: updatedGame };
+    return updatedGame;
   }
 
   async deleteGame(gameId: number) {
     await this.prisma.game.delete({
       where: { id: gameId },
     });
-    return { status: 'success' };
   }
 }

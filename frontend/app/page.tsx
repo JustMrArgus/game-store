@@ -24,7 +24,7 @@ const Home = () => {
   return (
     <div>
       <ul>
-        {data?.map((game) => (
+        {data?.data?.map((game) => (
           <li key={game.id}>{game.title}</li>
         ))}
       </ul>

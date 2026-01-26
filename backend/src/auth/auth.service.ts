@@ -87,7 +87,6 @@ export class AuthService {
     await this.addRefreshTokenHash(newUser.id, refreshToken);
 
     return {
-      status: 'success',
       id: newUser.id,
       email: newUser.email,
       name: newUser.name,
@@ -113,7 +112,7 @@ export class AuthService {
     });
 
     if (!user || user.hashedRefreshTokens.length === 0) {
-      return { status: 'success' };
+      return;
     }
 
     if (currentRefreshToken) {
@@ -132,8 +131,6 @@ export class AuthService {
     } else {
       await this.clearAllRefreshTokens(userId);
     }
-
-    return { status: 'success' };
   }
 
   async refreshTokens(userId: number, userRefreshToken: string) {
@@ -183,7 +180,6 @@ export class AuthService {
     });
 
     return {
-      status: 'success',
       accessToken,
       refreshToken,
     };

@@ -16,7 +16,7 @@ export class CartsService {
         },
       },
     });
-    return { status: 'success', data: carts };
+    return carts;
   }
 
   async getCart(cartId: number) {
@@ -30,14 +30,13 @@ export class CartsService {
         },
       },
     });
-    return { status: 'success', data: cart };
+    return cart;
   }
 
   async deleteCart(cartId: number) {
     await this.prisma.cart.delete({
       where: { id: cartId },
     });
-    return { status: 'success' };
   }
 
   async getCartItem(cartId: number, gameId: number) {
@@ -50,7 +49,7 @@ export class CartsService {
       },
     });
 
-    return { status: 'success', data: cartItem };
+    return cartItem;
   }
 
   async createCartItem(newCartItemData: CreateCartItemDto) {
@@ -77,7 +76,7 @@ export class CartsService {
           },
         },
       });
-      return { status: 'success', data: updatedCartItem };
+      return updatedCartItem;
     }
 
     const newCartItem = await this.prisma.cartItem.create({
@@ -88,7 +87,7 @@ export class CartsService {
         price: game.price,
       },
     });
-    return { status: 'success', data: newCartItem };
+    return newCartItem;
   }
 
   async deleteCartItem(cartId: number, gameId: number) {
@@ -100,7 +99,5 @@ export class CartsService {
         },
       },
     });
-
-    return { status: 'success' };
   }
 }
