@@ -16,6 +16,8 @@ export const getAllGames = async (
   if (params?.genre) query.append("genre", params.genre);
   if (params?.platforms?.length)
     query.append("platforms", params.platforms.join(","));
+  if (params?.sortBy) query.append("sortBy", params.sortBy);
+  if (params?.sortOrder) query.append("sortOrder", params.sortOrder);
   if (params?.minPrice !== undefined)
     query.append("minPrice", params.minPrice.toString());
   if (params?.maxPrice !== undefined)

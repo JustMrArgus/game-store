@@ -18,11 +18,22 @@ export class GamesService {
   }
 
   async getAllGames(query: GetGamesQueryDto) {
-    const { page, limit, genre, search, platforms, minPrice, maxPrice } = query;
+    const {
+      page,
+      limit,
+      genre,
+      search,
+      platforms,
+      minPrice,
+      maxPrice,
+      sortBy,
+      sortOrder,
+    } = query;
 
     const skip = (page - 1) * limit;
 
     const where: Prisma.GameWhereInput = {};
+    let orderBy: Prisma.GameOrderByWithRelationInput | undefined;
 
     if (genre) {
       where.genre = genre;
@@ -53,8 +64,17 @@ export class GamesService {
       }
     }
 
+    if (sortBy) {
+      orderBy = { [sortBy]: sortOrder };
+    }
+
     const [items, total] = await Promise.all([
-      this.prisma.game.findMany({ where, skip, take: limit }),
+      this.prisma.game.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy,
+      }),
       this.prisma.game.count({ where }),
     ]);
 

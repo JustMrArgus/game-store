@@ -1,13 +1,13 @@
 import {
   IsArray,
   IsDecimal,
+  IsIn,
   IsInt,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { Decimal } from '@prisma/client/runtime/client';
 
 export class GetGamesQueryDto {
   @IsOptional()
@@ -47,4 +47,12 @@ export class GetGamesQueryDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsIn(['title', 'buyCount', 'price'])
+  sortBy?: string;
+
+  @IsOptional()
+  @IsString()
+  sortOrder?: 'asc' | 'desc' = 'desc';
 }
