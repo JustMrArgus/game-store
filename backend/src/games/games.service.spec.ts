@@ -163,7 +163,250 @@ describe('GamesService', () => {
       const result = await service.getAllGames(query);
 
       expect(result.items).toEqual(mockGames);
-      expect(mockPrismaService.game.findMany).toHaveBeenCalled();
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            title: { contains: 'Test', mode: 'insensitive' },
+          }),
+        }),
+      );
+    });
+
+    it('should filter games by platforms', async () => {
+      const mockGames = [
+        { id: 1, title: 'PC Game', platforms: ['PC'] },
+        { id: 2, title: 'Multi-platform Game', platforms: ['PC', 'PS5'] },
+      ];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(2);
+
+      const query = { page: 1, limit: 10, platforms: ['PC'] };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            platforms: { hasSome: ['PC'] },
+          }),
+        }),
+      );
+    });
+
+    it('should filter games by minPrice', async () => {
+      const mockGames = [{ id: 1, title: 'Expensive Game', price: '59.99' }];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(1);
+
+      const query = { page: 1, limit: 10, minPrice: '50.00' };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            price: expect.objectContaining({
+              gte: expect.anything(),
+            }),
+          }),
+        }),
+      );
+    });
+
+    it('should filter games by maxPrice', async () => {
+      const mockGames = [{ id: 1, title: 'Cheap Game', price: '19.99' }];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(1);
+
+      const query = { page: 1, limit: 10, maxPrice: '30.00' };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            price: expect.objectContaining({
+              lte: expect.anything(),
+            }),
+          }),
+        }),
+      );
+    });
+
+    it('should filter games by price range', async () => {
+      const mockGames = [{ id: 1, title: 'Mid-priced Game', price: '39.99' }];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(1);
+
+      const query = {
+        page: 1,
+        limit: 10,
+        minPrice: '20.00',
+        maxPrice: '50.00',
+      };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            price: expect.objectContaining({
+              gte: expect.anything(),
+              lte: expect.anything(),
+            }),
+          }),
+        }),
+      );
+    });
+
+    it('should sort games by title ascending', async () => {
+      const mockGames = [
+        { id: 1, title: 'Alpha Game' },
+        { id: 2, title: 'Beta Game' },
+      ];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(2);
+
+      const query = {
+        page: 1,
+        limit: 10,
+        sortBy: 'title',
+        sortOrder: 'asc' as const,
+      };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderBy: { title: 'asc' },
+        }),
+      );
+    });
+
+    it('should sort games by price descending', async () => {
+      const mockGames = [
+        { id: 1, title: 'Expensive Game', price: '59.99' },
+        { id: 2, title: 'Cheap Game', price: '19.99' },
+      ];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(2);
+
+      const query = {
+        page: 1,
+        limit: 10,
+        sortBy: 'price',
+        sortOrder: 'desc' as const,
+      };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderBy: { price: 'desc' },
+        }),
+      );
+    });
+
+    it('should sort games by buyCount', async () => {
+      const mockGames = [
+        { id: 1, title: 'Popular Game', buyCount: 1000 },
+        { id: 2, title: 'New Game', buyCount: 10 },
+      ];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(2);
+
+      const query = {
+        page: 1,
+        limit: 10,
+        sortBy: 'buyCount',
+        sortOrder: 'desc' as const,
+      };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderBy: { buyCount: 'desc' },
+        }),
+      );
+    });
+
+    it('should apply multiple filters together', async () => {
+      const mockGames = [
+        {
+          id: 1,
+          title: 'Action PC Game',
+          genre: 'Action',
+          platforms: ['PC'],
+          price: '29.99',
+        },
+      ];
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(1);
+
+      const query = {
+        page: 1,
+        limit: 10,
+        genre: 'Action',
+        search: 'Action',
+        platforms: ['PC'],
+        minPrice: '20.00',
+        maxPrice: '40.00',
+        sortBy: 'price',
+        sortOrder: 'asc' as const,
+      };
+      const result = await service.getAllGames(query);
+
+      expect(result.items).toEqual(mockGames);
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            genre: 'Action',
+            title: { contains: 'Action', mode: 'insensitive' },
+            platforms: { hasSome: ['PC'] },
+            price: expect.objectContaining({
+              gte: expect.anything(),
+              lte: expect.anything(),
+            }),
+          }),
+          orderBy: { price: 'asc' },
+        }),
+      );
+    });
+
+    it('should calculate totalPages correctly', async () => {
+      const mockGames = Array(10).fill({ id: 1, title: 'Game' });
+
+      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      mockPrismaService.game.count.mockResolvedValue(25);
+
+      const query = { page: 1, limit: 10 };
+      const result = await service.getAllGames(query);
+
+      expect(result.meta.totalPages).toBe(3);
+    });
+
+    it('should skip correct number of items for pagination', async () => {
+      mockPrismaService.game.findMany.mockResolvedValue([]);
+      mockPrismaService.game.count.mockResolvedValue(0);
+
+      const query = { page: 3, limit: 10 };
+      await service.getAllGames(query);
+
+      expect(mockPrismaService.game.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 20,
+          take: 10,
+        }),
+      );
     });
   });
 
