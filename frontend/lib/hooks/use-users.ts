@@ -1,4 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useSuspenseQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   getAllUsers,
   getUser,
@@ -7,7 +11,7 @@ import {
   patchUser,
   patchMe,
   deleteUser,
-} from "@/lib/api/api";
+} from "@/lib/api/api-users";
 import type {
   UpdateUserRequest,
   CreateUserRequest,
@@ -20,22 +24,21 @@ export const userKeys = {
 };
 
 export const useUsers = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: userKeys.all,
     queryFn: getAllUsers,
   });
 };
 
 export const useUser = (userId: number) => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: userKeys.detail(userId),
     queryFn: () => getUser(userId),
-    enabled: !!userId,
   });
 };
 
 export const useMe = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: userKeys.me,
     queryFn: getMe,
   });

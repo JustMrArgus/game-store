@@ -1,4 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useSuspenseQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type {
   Game,
   GetGamesParams,
@@ -18,17 +22,16 @@ export const gameKeys = {
 };
 
 export const useGames = (params?: GetGamesParams) => {
-  return useQuery<GetGamesResponse>({
+  return useSuspenseQuery<GetGamesResponse>({
     queryKey: gameKeys.all(params),
     queryFn: () => getAllGames(params),
   });
 };
 
 export const useGame = (gameId: number) => {
-  return useQuery<Game>({
+  return useSuspenseQuery<Game>({
     queryKey: gameKeys.detail(gameId),
     queryFn: () => getGame(gameId),
-    enabled: !!gameId,
   });
 };
 

@@ -1,4 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useSuspenseQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   getAllCarts,
   getCart,
@@ -17,17 +21,16 @@ export const cartKeys = {
 };
 
 export const useCarts = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: cartKeys.all,
     queryFn: getAllCarts,
   });
 };
 
 export const useCart = (cartId: number) => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: cartKeys.detail(cartId),
     queryFn: () => getCart(cartId),
-    enabled: !!cartId,
   });
 };
 
@@ -43,10 +46,9 @@ export const useDeleteCart = () => {
 };
 
 export const useCartItem = (cartId: number, gameId: number) => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: cartKeys.item(cartId, gameId),
     queryFn: () => getCartItem(cartId, gameId),
-    enabled: !!cartId && !!gameId,
   });
 };
 

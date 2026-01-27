@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { stripeCheckout, verifyPaymentSession } from "@/lib/api/api-payments";
 
 export const paymentKeys = {
@@ -12,9 +12,8 @@ export const useStripeCheckout = () => {
 };
 
 export const useVerifyPaymentSession = (sessionId: string) => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: paymentKeys.verify(sessionId),
     queryFn: () => verifyPaymentSession(sessionId),
-    enabled: !!sessionId,
   });
 };
