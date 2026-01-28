@@ -1,13 +1,12 @@
-"use client";
+'use client';
 
-import GamesList from "@/components/common/GamesList";
-import { useGames } from "@/lib/hooks/use-games";
+import GamesList from '@/components/GamesList';
 
 const Home = () => {
   return (
-    <>
-      <GamesList />
-    </>
+    <div className="px-55 mt-15">
+      <GamesList limit={18} sortBy="buyCount" gamesListMode="home" />
+    </div>
   );
 };
 
