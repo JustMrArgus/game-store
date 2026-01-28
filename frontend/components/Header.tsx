@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 const Header = () => {
   return (
-    <header className="flex justify-between">
+    <header className="flex justify-between  py-3 px-3">
       <p className="font-bold text-2xl">
         <Link href="/">GAME STORE</Link>
       </p>

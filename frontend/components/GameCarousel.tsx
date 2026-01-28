@@ -51,8 +51,8 @@ const GameCarousel = (queryParams: CarouselProps) => {
         ))}
       </CarouselContent>
 
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className="bg-[#353538] cursor-pointer border-none" />
+      <CarouselNext className="bg-[#353538] cursor-pointer border-none" />
     </Carousel>
   );
 };
