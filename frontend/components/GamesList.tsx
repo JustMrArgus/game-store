@@ -33,7 +33,7 @@ const GamesList = ({ gamesListMode, ...queryParams }: GamesListProps) => {
         <GameCard
           key={game.id}
           id={game.id}
-          primaryImage={game.primaryImage}
+          logo={game.logo}
           title={game.title}
           price={game.price}
         />

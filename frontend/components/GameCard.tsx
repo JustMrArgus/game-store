@@ -5,20 +5,22 @@ import Link from 'next/link';
 
 interface GameCardProps {
   id: number;
-  primaryImage: string;
+  logo: string;
   title: string;
   price: number;
 }
 
-const GameCard = ({ id, primaryImage, title, price }: GameCardProps) => {
+const GameCard = ({ id, logo, title, price }: GameCardProps) => {
   return (
     <Link href={`/game/${id}`}>
       <Card className="bg-transparent text-white cursor-pointer pt-0 border-none transition duration-300 hover:scale-[1.1]">
-        <GameImage
-          src={`${API_URL}${primaryImage}`}
-          alt="Image of the game"
-          fallbackSrc="/defaultGameImage.jpg"
-        />
+        <div className="w-full h-55">
+          <GameImage
+            src={`${API_URL}${logo}`}
+            alt="Image of the game"
+            fallbackSrc="/defaultGameImage.jpg"
+          />
+        </div>
         <CardHeader className="pl-0">
           <CardTitle>{title}</CardTitle>
         </CardHeader>
