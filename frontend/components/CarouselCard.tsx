@@ -18,7 +18,7 @@ const CarouselCard = ({
   price,
 }: CarouselCardProps) => {
   return (
-    <Link href={`/game/${id}`} className="block w-full">
+    <Link href={`/games/${id}`} className="block w-full">
       <Card
         className="
           relative

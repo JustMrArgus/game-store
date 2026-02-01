@@ -12,7 +12,7 @@ interface GameCardProps {
 
 const GameCard = ({ id, logo, title, price }: GameCardProps) => {
   return (
-    <Link href={`/game/${id}`}>
+    <Link href={`/games/${id}`}>
       <Card className="bg-transparent text-white cursor-pointer pt-0 border-none transition duration-300 hover:scale-[1.1]">
         <div className="w-full h-55">
           <GameImage
