@@ -37,10 +37,6 @@ export class CreateGameDto {
 
   @IsString()
   @IsNotEmpty()
-  trailer: string;
-
-  @IsString()
-  @IsNotEmpty()
   @IsOptional()
   primaryImage: string;
 

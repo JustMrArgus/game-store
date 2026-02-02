@@ -1,7 +1,7 @@
 import { Card, CardDescription, CardTitle } from './ui/card';
 import { API_URL } from '@/lib/api/constants/constants';
 import Link from 'next/link';
-import { GameImage } from './CarouselImage';
+import CarouselImage from './CarouselImage';
 import { Button } from './ui/button';
 
 interface CarouselCardProps {
@@ -31,7 +31,7 @@ const CarouselCard = ({
         "
       >
         <div className="absolute inset-0 h-full w-full">
-          <GameImage
+          <CarouselImage
             src={`${API_URL}${primaryImage}`}
             alt={title}
             fallbackSrc="/defaultGameImage.jpg"

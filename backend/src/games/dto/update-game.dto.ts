@@ -44,11 +44,6 @@ export class UpdateGameDto {
   @IsString()
   @IsOptional()
   @IsNotEmpty()
-  trailer?: string;
-
-  @IsString()
-  @IsOptional()
-  @IsNotEmpty()
   primaryImage?: string;
 
   @IsArray()

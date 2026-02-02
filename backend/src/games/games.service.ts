@@ -74,6 +74,7 @@ export class GamesService {
         skip,
         take: limit,
         orderBy,
+        omit: { keys: true },
       }),
       this.prisma.game.count({ where }),
     ]);

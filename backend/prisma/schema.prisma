@@ -38,7 +38,6 @@ model Game {
   genre             String
   buyCount          Int     @default(0)
   description       String
-  trailer           String
   primaryImage      String
   additionalImages  String[]
   logo              String

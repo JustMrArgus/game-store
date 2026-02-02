@@ -1,4 +1,4 @@
-export type Role = "ADMIN" | "USER";
+export type Role = 'ADMIN' | 'USER';
 
 export interface User {
   id: number;
@@ -15,7 +15,6 @@ export interface Game {
   genre: string;
   buyCount: number;
   description: string;
-  trailer: string;
   primaryImage: string;
   additionalImages: string[];
   logo: string;
@@ -75,7 +74,7 @@ export interface GetGamesParams {
   maxPrice?: number;
   search?: string;
   sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface GetGamesResponse {

@@ -3,17 +3,17 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-interface GameImageProps {
+interface CarouselImageProps {
   src: string;
   alt: string;
   fallbackSrc?: string;
 }
 
-export const GameImage = ({
+const CarouselImage = ({
   src,
   alt,
-  fallbackSrc = '/images/placeholder.png',
-}: GameImageProps) => {
+  fallbackSrc = '/defaultGameImage.jpg',
+}: CarouselImageProps) => {
   const [currentSrc, setCurrentSrc] = useState(src);
 
   useEffect(() => {
@@ -30,3 +30,5 @@ export const GameImage = ({
     />
   );
 };
+
+export default CarouselImage;

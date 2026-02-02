@@ -12,7 +12,7 @@ interface GameImageProps {
 export const GameImage = ({
   src,
   alt,
-  fallbackSrc = '/images/placeholder.png',
+  fallbackSrc = '/defaultGameImage.jpg',
 }: GameImageProps) => {
   const [currentSrc, setCurrentSrc] = useState(src);
 

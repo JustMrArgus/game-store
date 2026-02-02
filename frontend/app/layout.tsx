@@ -29,11 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#101014] text-white`}
       >
         <QueryProvider>
           <Header />
-          {children}
+          <div className="px-55">{children}</div>
           <Footer />
         </QueryProvider>
       </body>
