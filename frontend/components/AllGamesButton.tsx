@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 
 const AllGamesButton = () => {
   return (
-    <Link href={'/games'} className="mt-5">
+    <Link href={'/games?sortBy=title&sortOrder=asc&page=1'} className="mt-5">
       <Button
         variant="outline"
         size="lg"
