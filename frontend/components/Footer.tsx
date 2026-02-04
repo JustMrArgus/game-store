@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#353538]/35 h-[25vh] w-full flex justify-between items-center px-5 mt-10 pb-5">
+    <footer className="bg-[#353538]/35 w-full flex justify-between items-center px-5 py-10 mt-10">
       <p className="font-bold text-2xl">
         <Link href="/">GAME STORE</Link>
       </p>

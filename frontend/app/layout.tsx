@@ -32,9 +32,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#101014] text-white`}
       >
         <QueryProvider>
-          <Header />
-          <div className="px-55">{children}</div>
-          <Footer />
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-1 px-55">{children}</main>
+            <Footer />
+          </div>
         </QueryProvider>
       </body>
     </html>
