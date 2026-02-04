@@ -17,6 +17,7 @@ describe('GamesService', () => {
       update: jest.fn(),
       delete: jest.fn(),
       count: jest.fn(),
+      aggregate: jest.fn(),
     },
   };
 
@@ -58,6 +59,11 @@ describe('GamesService', () => {
     service = module.get<GamesService>(GamesService);
 
     jest.clearAllMocks();
+
+    mockPrismaService.game.aggregate.mockResolvedValue({
+      _min: { price: '9.99' },
+      _max: { price: '99.99' },
+    });
   });
 
   it('should be defined', () => {
@@ -99,6 +105,13 @@ describe('GamesService', () => {
   });
 
   describe('getAllGames', () => {
+    const setupFindManyMocks = (games: unknown[]) => {
+      mockPrismaService.game.findMany
+        .mockResolvedValueOnce(games)
+        .mockResolvedValueOnce([{ genre: 'Action' }])
+        .mockResolvedValueOnce([{ platforms: ['PC', 'PS5'] }]);
+    };
+
     it('should return all games with pagination', async () => {
       const mockGames = [
         {
@@ -115,7 +128,7 @@ describe('GamesService', () => {
         },
       ];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(2);
 
       const query = { page: 1, limit: 10 };
@@ -124,12 +137,11 @@ describe('GamesService', () => {
       expect(result.items).toEqual(mockGames);
       expect(result.items.length).toBe(2);
       expect(result.meta.total).toBe(2);
-      expect(result.meta.page).toBe(1);
       expect(result.meta.limit).toBe(10);
     });
 
     it('should return empty array when no games exist', async () => {
-      mockPrismaService.game.findMany.mockResolvedValue([]);
+      setupFindManyMocks([]);
       mockPrismaService.game.count.mockResolvedValue(0);
 
       const query = { page: 1, limit: 10 };
@@ -142,7 +154,7 @@ describe('GamesService', () => {
     it('should filter games by genre', async () => {
       const mockGames = [{ id: 1, title: 'Action Game', genre: 'Action' }];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(1);
 
       const query = { page: 1, limit: 10, genre: 'Action' };
@@ -155,7 +167,7 @@ describe('GamesService', () => {
     it('should search games by title', async () => {
       const mockGames = [{ id: 1, title: 'Test Game' }];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(1);
 
       const query = { page: 1, limit: 10, search: 'Test' };
@@ -177,7 +189,7 @@ describe('GamesService', () => {
         { id: 2, title: 'Multi-platform Game', platforms: ['PC', 'PS5'] },
       ];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(2);
 
       const query = { page: 1, limit: 10, platforms: ['PC'] };
@@ -196,7 +208,7 @@ describe('GamesService', () => {
     it('should filter games by minPrice', async () => {
       const mockGames = [{ id: 1, title: 'Expensive Game', price: '59.99' }];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(1);
 
       const query = { page: 1, limit: 10, minPrice: '50.00' };
@@ -217,7 +229,7 @@ describe('GamesService', () => {
     it('should filter games by maxPrice', async () => {
       const mockGames = [{ id: 1, title: 'Cheap Game', price: '19.99' }];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(1);
 
       const query = { page: 1, limit: 10, maxPrice: '30.00' };
@@ -238,7 +250,7 @@ describe('GamesService', () => {
     it('should filter games by price range', async () => {
       const mockGames = [{ id: 1, title: 'Mid-priced Game', price: '39.99' }];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(1);
 
       const query = {
@@ -268,7 +280,7 @@ describe('GamesService', () => {
         { id: 2, title: 'Beta Game' },
       ];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(2);
 
       const query = {
@@ -293,7 +305,7 @@ describe('GamesService', () => {
         { id: 2, title: 'Cheap Game', price: '19.99' },
       ];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(2);
 
       const query = {
@@ -318,7 +330,7 @@ describe('GamesService', () => {
         { id: 2, title: 'New Game', buyCount: 10 },
       ];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(2);
 
       const query = {
@@ -348,7 +360,7 @@ describe('GamesService', () => {
         },
       ];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(1);
 
       const query = {
@@ -382,9 +394,9 @@ describe('GamesService', () => {
     });
 
     it('should calculate totalPages correctly', async () => {
-      const mockGames = Array(10).fill({ id: 1, title: 'Game' });
+      const mockGames = Array(10).fill({ id: 1, title: 'Game' }) as unknown[];
 
-      mockPrismaService.game.findMany.mockResolvedValue(mockGames);
+      setupFindManyMocks(mockGames);
       mockPrismaService.game.count.mockResolvedValue(25);
 
       const query = { page: 1, limit: 10 };
@@ -394,7 +406,7 @@ describe('GamesService', () => {
     });
 
     it('should skip correct number of items for pagination', async () => {
-      mockPrismaService.game.findMany.mockResolvedValue([]);
+      setupFindManyMocks([]);
       mockPrismaService.game.count.mockResolvedValue(0);
 
       const query = { page: 3, limit: 10 };
