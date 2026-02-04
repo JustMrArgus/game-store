@@ -84,5 +84,9 @@ export interface GetGamesResponse {
     page: number;
     limit: number;
     totalPages: number;
+    minAvailablePrice: number;
+    maxAvailablePrice: number;
+    allGenres: string[];
+    allPlatforms: string[];
   };
 }
