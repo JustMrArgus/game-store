@@ -25,7 +25,9 @@ const SearchInput = () => {
   });
 
   const onSubmit = ({ title }: SearchFormValues) => {
-    router.push(`/games?search=${encodeURIComponent(title)}`);
+    router.push(
+      `/games?search=${encodeURIComponent(title)}&sortBy=title&sortOrder=asc&page=1`,
+    );
   };
 
   return (
