@@ -35,49 +35,50 @@ export class GamesService {
     const where: Prisma.GameWhereInput = {};
     let orderBy: Prisma.GameOrderByWithRelationInput | undefined;
 
-    if (genre) {
-      where.genre = genre;
-    }
-
-    if (search) {
-      where.title = {
-        contains: search,
-        mode: 'insensitive',
-      };
-    }
-
-    if (platforms?.length) {
-      where.platforms = {
-        hasSome: platforms,
-      };
-    }
+    if (genre) where.genre = genre;
+    if (search) where.title = { contains: search, mode: 'insensitive' };
+    if (platforms?.length) where.platforms = { hasSome: platforms };
 
     if (minPrice || maxPrice) {
       where.price = {};
-
-      if (minPrice) {
-        where.price.gte = new Decimal(minPrice);
-      }
-
-      if (maxPrice) {
-        where.price.lte = new Decimal(maxPrice);
-      }
+      if (minPrice) where.price.gte = new Decimal(minPrice);
+      if (maxPrice) where.price.lte = new Decimal(maxPrice);
     }
 
     if (sortBy) {
       orderBy = { [sortBy]: sortOrder };
     }
 
-    const [items, total] = await Promise.all([
-      this.prisma.game.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy,
-        omit: { keys: true },
-      }),
-      this.prisma.game.count({ where }),
-    ]);
+    const [items, total, priceAggregations, distinctGenres, rawPlatforms] =
+      await Promise.all([
+        this.prisma.game.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy,
+          omit: { keys: true },
+        }),
+
+        this.prisma.game.count({ where }),
+
+        this.prisma.game.aggregate({
+          _min: { price: true },
+          _max: { price: true },
+        }),
+
+        this.prisma.game.findMany({
+          distinct: ['genre'],
+          select: { genre: true },
+        }),
+
+        this.prisma.game.findMany({
+          select: { platforms: true },
+        }),
+      ]);
+
+    const allGenres = distinctGenres.map((g) => g.genre);
+
+    const allPlatforms = [...new Set(rawPlatforms.flatMap((p) => p.platforms))];
 
     return {
       items,
@@ -86,6 +87,10 @@ export class GamesService {
         page,
         limit,
         totalPages: Math.ceil(total / limit),
+        minAvailablePrice: priceAggregations._min.price,
+        maxAvailablePrice: priceAggregations._max.price,
+        allGenres,
+        allPlatforms,
       },
     };
   }
