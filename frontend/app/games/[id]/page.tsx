@@ -31,7 +31,9 @@ const GamePage = () => {
             <p>{game.description}</p>
             <p className="text-[#a2a2a3]">
               Genre:{' '}
-              <Link href={`/games?genre=${encodeURIComponent(game.genre)}`}>
+              <Link
+                href={`/games?genre=${encodeURIComponent(game.genre)}&sortBy=title&sortOrder=asc&page=1`}
+              >
                 <Button
                   variant="outline"
                   className="bg-[#353538] text-white hover:bg-[#ffffff59] border-none hover:text-white transition duration-100 cursor-pointer py-1 px-2"
@@ -58,7 +60,7 @@ const GamePage = () => {
                 className="grow py-7 bg-[#26bbff] border-0 text-black rounded-xl cursor-pointer transition duration-100"
                 variant="outline"
               >
-                Buy Now
+                {game.price <= 0 ? 'Get for free' : 'Buy Now'}
               </Button>
               <Button
                 variant="outline"
