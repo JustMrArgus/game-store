@@ -26,9 +26,12 @@ export class AuthController {
     @Body() registerUserDto: RegisterUserDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const tokens = await this.authService.register(registerUserDto);
+    const { accessToken, refreshToken, ...user } =
+      await this.authService.register(registerUserDto);
 
-    this.setCookies(res, tokens.accessToken, tokens.refreshToken);
+    this.setCookies(res, accessToken, refreshToken);
+
+    return user;
   }
 
   @UseGuards(AuthGuard('local'))
@@ -43,6 +46,8 @@ export class AuthController {
     await this.authService.addRefreshTokenHash(user.id, tokens.refreshToken);
 
     this.setCookies(res, tokens.accessToken, tokens.refreshToken);
+
+    return user;
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
@@ -80,14 +85,14 @@ export class AuthController {
   private setCookies(res: Response, accessToken: string, refreshToken: string) {
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: false, // temporary
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false, // temporary
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
