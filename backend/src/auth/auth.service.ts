@@ -98,6 +98,7 @@ export class AuthService {
       id: newUser.id,
       email: newUser.email,
       name: newUser.name,
+      role: ROLE.USER,
       accessToken,
       refreshToken,
     };
@@ -107,7 +108,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const { password, ...result } = user;
+      const { password, hashedRefreshTokens, ...result } = user;
       return result;
     }
     return null;
