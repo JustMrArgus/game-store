@@ -1,7 +1,10 @@
-export const handleResponse = async <T>(response: Response): Promise<T> => {
+export const handleResponse = async <T>(
+  response: Response,
+): Promise<T | null> => {
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || 'An error occurred');
+    throw new Error((await response.json())?.message ?? 'An error occurred');
   }
-  return response.json() as Promise<T>;
+
+  const text = await response.text();
+  return text ? (JSON.parse(text) as T) : null;
 };
