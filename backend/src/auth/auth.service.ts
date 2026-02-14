@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -62,6 +66,10 @@ export class AuthService {
   }
 
   async register(dto: RegisterUserDto) {
+    if (dto.password !== dto.passwordConfirm) {
+      throw new BadRequestException('Passwords do not match');
+    }
+
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const newUser = await this.prisma.user.create({
       data: {
