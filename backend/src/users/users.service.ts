@@ -27,14 +27,14 @@ export class UsersService {
         name: true,
       },
     });
-    return { status: 'success', data: newUser };
+    return newUser;
   }
 
   async getAllUsers() {
     const users = await this.prisma.user.findMany({
       select: { id: true, email: true, name: true, role: true },
     });
-    return { status: 'success', data: users };
+    return users;
   }
 
   async getUser(userId: number) {
@@ -42,7 +42,7 @@ export class UsersService {
       where: { id: userId },
       select: { id: true, email: true, name: true, role: true },
     });
-    return { status: 'success', data: user };
+    return user;
   }
 
   async updateUser(userId: number, modifedUserData: UpdateUserDto) {
@@ -56,14 +56,12 @@ export class UsersService {
         role: true,
       },
     });
-    return { status: 'success', data: updatedUser };
+    return updatedUser;
   }
 
   async deleteUser(userId: number) {
     await this.prisma.user.delete({
       where: { id: userId },
     });
-
-    return { status: 'success' };
   }
 }
