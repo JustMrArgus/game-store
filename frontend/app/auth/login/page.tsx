@@ -16,8 +16,9 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { useLogin } from '@/lib/hooks/use-auth';
+import { authKeys, useLogin } from '@/lib/hooks/use-auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
@@ -25,6 +26,8 @@ import z from 'zod';
 
 const LoginPage = () => {
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   const { mutate: login } = useLogin();
 
@@ -48,7 +51,8 @@ const LoginPage = () => {
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     login(data, {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: authKeys.me });
         router.push('/');
       },
       onError: (error: any) => {

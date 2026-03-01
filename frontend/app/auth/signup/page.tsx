@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useRegister } from '@/lib/hooks/use-auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
@@ -25,6 +26,8 @@ import z from 'zod';
 
 const SignUpPage = () => {
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   const { mutate: register } = useRegister();
 
@@ -59,7 +62,8 @@ const SignUpPage = () => {
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     register(data, {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: authKeys.me });
         router.push('/');
       },
       onError: (error: any) => {
