@@ -36,13 +36,6 @@ export class UsersController {
     return await this.usersService.getAllUsers();
   }
 
-  @Roles(ROLE.ADMIN)
-  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
-  @Get(':userId')
-  async getUser(@Param('userId', ParseIntPipe) userId: number) {
-    return await this.usersService.getUser(userId);
-  }
-
   @Roles(ROLE.ADMIN, ROLE.USER)
   @UseGuards(AuthGuard('jwt-at'), RolesGuard)
   @Get('me')
@@ -54,12 +47,9 @@ export class UsersController {
 
   @Roles(ROLE.ADMIN)
   @UseGuards(AuthGuard('jwt-at'), RolesGuard)
-  @Patch(':userId')
-  async updateUser(
-    @Param('userId', ParseIntPipe) userId: number,
-    @Body() modifedUserData: UpdateUserDto,
-  ) {
-    return await this.usersService.updateUser(userId, modifedUserData);
+  @Get(':userId')
+  async getUser(@Param('userId', ParseIntPipe) userId: number) {
+    return await this.usersService.getUser(userId);
   }
 
   @Roles(ROLE.ADMIN, ROLE.USER)
@@ -69,6 +59,16 @@ export class UsersController {
     const userId = req.user.sub;
 
     return await this.usersService.updateUser(+userId, modifedUserData);
+  }
+
+  @Roles(ROLE.ADMIN)
+  @UseGuards(AuthGuard('jwt-at'), RolesGuard)
+  @Patch(':userId')
+  async updateUser(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() modifedUserData: UpdateUserDto,
+  ) {
+    return await this.usersService.updateUser(userId, modifedUserData);
   }
 
   @Roles(ROLE.ADMIN)
