@@ -1,69 +1,42 @@
 import type { User } from "@/lib/types/responses";
-import type {
-  UpdateUserRequest,
-  CreateUserRequest,
-} from "@/lib/types/requests";
-import { handleResponse } from "./utils/api-utils";
-import { API_URL } from "./constants/constants";
+import type { UpdateUserRequest, CreateUserRequest } from "@/lib/types/requests";
+import { apiFetch } from "./utils/api-utils";
 
 export const getAllUsers = async (): Promise<User[]> => {
-  const response = await fetch(`${API_URL}/users`, {
-    credentials: "include",
-  });
-  return handleResponse<User[]>(response);
+  return await apiFetch<User[]>("/users") as User[];
 };
 
 export const getUser = async (userId: number): Promise<User> => {
-  const response = await fetch(`${API_URL}/users/${userId}`, {
-    credentials: "include",
-  });
-  return handleResponse<User>(response);
+  return await apiFetch<User>(`/users/${userId}`) as User;
 };
 
-export const patchUser = async (
-  userId: number,
-  data: UpdateUserRequest,
-): Promise<User> => {
-  const response = await fetch(`${API_URL}/users/${userId}`, {
+export const patchUser = async (userId: number, data: UpdateUserRequest): Promise<User> => {
+  return await apiFetch<User>(`/users/${userId}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
-    credentials: "include",
-  });
-  return handleResponse<User>(response);
+  }) as User;
 };
 
 export const createUser = async (data: CreateUserRequest): Promise<User> => {
-  const response = await fetch(`${API_URL}/users`, {
+  return await apiFetch<User>("/users", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
-    credentials: "include",
-  });
-  return handleResponse<User>(response);
+  }) as User;
 };
 
 export const deleteUser = async (userId: number): Promise<User> => {
-  const response = await fetch(`${API_URL}/users/${userId}`, {
+  return await apiFetch<User>(`/users/${userId}`, {
     method: "DELETE",
-    credentials: "include",
-  });
-  return handleResponse<User>(response);
+  }) as User;
 };
 
 export const getMe = async (): Promise<User> => {
-  const response = await fetch(`${API_URL}/users/me`, {
-    credentials: "include",
-  });
-  return handleResponse<User>(response);
+  return await apiFetch<User>("/users/me", { skipRedirect: true }) as User;
 };
 
 export const patchMe = async (data: UpdateUserRequest): Promise<User> => {
-  const response = await fetch(`${API_URL}/users/me`, {
+  return await apiFetch<User>("/users/me", {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
-    credentials: "include",
-  });
-  return handleResponse<User>(response);
+  }) as User;
 };

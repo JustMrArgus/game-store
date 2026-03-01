@@ -1,5 +1,6 @@
 import {
   useSuspenseQuery,
+  useQuery,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -38,9 +39,10 @@ export const useUser = (userId: number) => {
 };
 
 export const useMe = () => {
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: userKeys.me,
     queryFn: getMe,
+    retry: false,
   });
 };
 
