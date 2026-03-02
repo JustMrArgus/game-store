@@ -60,7 +60,7 @@ const GamePage = () => {
                 className="grow py-7 bg-[#26bbff] border-0 text-black rounded-xl cursor-pointer transition duration-100"
                 variant="outline"
               >
-                {game.price <= 0 ? 'Get for free' : 'Buy Now'}
+                {game.price <= 0 ? 'Get for free' : 'Add to your cart'}
               </Button>
               <Button
                 variant="outline"
