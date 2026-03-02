@@ -1,5 +1,4 @@
 import { useAuthStore } from '@/store/use-auth-store';
-import toast from 'react-hot-toast';
 import { API_URL } from '../constants/constants';
 
 const BASE_URL = API_URL;
@@ -20,10 +19,10 @@ export interface ApiFetchOptions extends RequestInit {
 
 export const apiFetch = async <T>(
   endpoint: string,
-  options: ApiFetchOptions = {}
+  options: ApiFetchOptions = {},
 ): Promise<T | null> => {
   const isServer = typeof window === 'undefined';
-  
+
   const { skipRedirect, ...fetchOptions } = options;
 
   const config: RequestInit = {
@@ -49,20 +48,22 @@ export const apiFetch = async <T>(
         });
       }
       await refreshTokenPromise;
-      
+
       response = await fetch(`${BASE_URL}${endpoint}`, config);
       if (response.status === 401) throw new Error('Still unauthorized');
-      
     } catch (error) {
       useAuthStore.getState().logout();
-      
+
       if (!skipRedirect) {
-        toast.error('The session has expired. Please sign in again.');
+        sessionStorage.setItem(
+          'auth_error',
+          'The session has expired. Please sign in again.',
+        );
         if (window.location.pathname !== '/auth/login') {
           window.location.href = '/auth/login';
         }
       }
-      
+
       throw new Error('Session completely expired');
     }
   }
