@@ -43,18 +43,16 @@ const NavBar = () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       ) : (
-        <NavigationMenuLink>
-          <Link
-            href={'/me'}
-            className="flex justify-center gap-2 text-[#cfcfd3] transition duration-300 hover:opacity-70 hover:cursor-pointer"
-          >
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>PFP</AvatarFallback>
-            </Avatar>
-            <p>{user?.name}</p>
-          </Link>
-        </NavigationMenuLink>
+        <Link
+          href={'/me'}
+          className="flex justify-center gap-2 text-[#cfcfd3] transition duration-300 hover:opacity-70 hover:cursor-pointer"
+        >
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarFallback>PFP</AvatarFallback>
+          </Avatar>
+          <p>{user?.name}</p>
+        </Link>
       )}
     </NavigationMenu>
   );
