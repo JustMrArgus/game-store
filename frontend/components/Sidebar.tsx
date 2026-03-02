@@ -13,6 +13,7 @@ import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { Checkbox } from './ui/checkbox';
 import { Label } from './ui/label';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { useDebounce } from '@/lib/hooks/use-debounce';
 
 interface SidebarProps {
   genres: string[];
@@ -20,30 +21,37 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ genres, platforms }: SidebarProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams.toString());
+
   const [isGenreMenuOpen, setIsGenreMenuOpen] = useState<boolean>(false);
   const [isPlatformsMenuOpen, setIsPlatformsMenuOpen] =
     useState<boolean>(false);
 
-  const [selectedGenre, setSelectedGenre] = useState<string>('default');
+  const currentGenre = params.get('genre');
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const [selectedGenre, setSelectedGenre] = useState<string>(
+    currentGenre ?? 'default',
+  );
 
-  const params = new URLSearchParams(searchParams.toString());
   const searchValue = params.get('search');
 
   const [search, setSearch] = useState<string>(searchValue ?? '');
 
-  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-
+  const debouncedSearch = useDebounce((value: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
     params.set('search', value);
     params.set('page', '1');
 
     router.push(`/games?${params.toString()}`);
+  }, 300);
+
+  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+    debouncedSearch(value);
   };
 
   const onPlatformsCheckpointChange = (value: string) => {
