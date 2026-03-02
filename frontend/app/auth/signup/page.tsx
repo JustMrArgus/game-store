@@ -201,7 +201,7 @@ const SignUpPage = () => {
               form="form-signup"
               className="bg-[#353538] text-white hover:bg-[#ffffff59] border-none hover:text-white transition duration-100 cursor-pointer"
             >
-              Submit
+              Sign Up
             </Button>
           </Field>
         </CardFooter>

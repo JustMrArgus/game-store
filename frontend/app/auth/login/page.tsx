@@ -142,7 +142,7 @@ const LoginPage = () => {
               form="form-login"
               className="bg-[#353538] text-white hover:bg-[#ffffff59] border-none hover:text-white transition duration-100 cursor-pointer"
             >
-              Submit
+              Log in
             </Button>
           </Field>
         </CardFooter>
